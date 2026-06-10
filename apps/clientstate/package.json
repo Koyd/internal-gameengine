@@ -1,0 +1,14 @@
+{
+  "name": "@internal/clientstate",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@effect/platform-browser": "0.76.0",
+    "@effect/rpc": "0.75.1",
+    "@internal/contracts": "*",
+    "effect": "3.21.3"
+  }
+}

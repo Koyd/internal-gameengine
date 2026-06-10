@@ -1,0 +1,19 @@
+appId: com.internal.gameengine.example
+directories:
+  output: ../../dist-desktop
+files:
+  - dist/**
+  - package.json
+extraResources:
+  - from: ../web/dist
+    to: web
+  - from: ../../projects/example/assets
+    to: projects/example/assets
+asar: true
+npmRebuild: false
+linux:
+  executableName: internal-game-engine-example
+  target:
+    - AppImage
+  category: Game
+artifactName: internal-game-engine-example-${version}-${arch}.${ext}

@@ -1,0 +1,20 @@
+{
+  "name": "@internal/desktop-app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Electron host for the internal game engine example",
+  "author": "Internal Game Engine",
+  "type": "module",
+  "main": "dist/main.cjs",
+  "scripts": {
+    "build": "vp build .",
+    "pack": "node --experimental-strip-types ../../scripts/example-build.ts package-electron"
+  },
+  "devDependencies": {
+    "@internal/desktop": "*",
+    "@internal/example-game": "*",
+    "electron": "42.4.0",
+    "electron-builder": "26.15.2"
+  },
+  "desktopName": "Internal Game Engine Example"
+}

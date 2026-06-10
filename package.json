@@ -1,0 +1,36 @@
+{
+  "name": "internal-gameengine",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "projects/*"
+  ],
+  "type": "module",
+  "scripts": {
+    "build": "vp run example:build",
+    "check": "vp check",
+    "dev": "vp run --parallel --filter @internal/web --filter @internal/runtime dev",
+    "dev:runtime": "vp run @internal/runtime#dev",
+    "dev:web": "vp dev apps/web",
+    "test": "vp test"
+  },
+  "devDependencies": {
+    "@types/node": "25.9.2",
+    "@typescript/native-preview": "7.0.0-dev.20260609.1",
+    "@voidzero-dev/vite-plus-core": "0.1.24",
+    "@voidzero-dev/vite-plus-test": "0.1.24",
+    "electron": "42.4.0",
+    "electron-builder": "26.15.2",
+    "vite-plus": "0.1.24"
+  },
+  "overrides": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.1.24",
+    "vitest": "npm:@voidzero-dev/vite-plus-test@0.1.24"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "npm@11.16.0"
+}

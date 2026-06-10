@@ -1,0 +1,12 @@
+{
+  "name": "@internal/contracts",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@effect/rpc": "0.75.1",
+    "effect": "3.21.3"
+  }
+}

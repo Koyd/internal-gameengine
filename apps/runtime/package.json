@@ -1,0 +1,23 @@
+{
+  "name": "@internal/runtime",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./assets": "./src/services/filesystem-game-assets.ts",
+    "./persistence": "./src/persistence.ts"
+  },
+  "scripts": {
+    "dev": "node --watch --experimental-strip-types src/main.ts",
+    "example:serve": "node --experimental-strip-types src/main.ts",
+    "start": "node --experimental-strip-types src/main.ts"
+  },
+  "dependencies": {
+    "@effect/platform": "0.96.1",
+    "@effect/platform-node": "0.107.0",
+    "@effect/rpc": "0.75.1",
+    "@internal/contracts": "*",
+    "@internal/example-game": "*",
+    "@internal/runtime-domain": "*",
+    "effect": "3.21.3"
+  }
+}

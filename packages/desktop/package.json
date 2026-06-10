@@ -1,0 +1,17 @@
+{
+  "name": "@internal/desktop",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./preload": "./src/preload.ts"
+  },
+  "dependencies": {
+    "@internal/contracts": "*",
+    "@internal/engine": "*",
+    "@internal/runtime": "*",
+    "@internal/runtime-domain": "*",
+    "effect": "3.21.3",
+    "electron": "42.4.0"
+  }
+}

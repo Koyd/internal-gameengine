@@ -1,0 +1,123 @@
+.example-game {
+  background: #080c10;
+  color: #d7e0e8;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.example-game__viewport {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.example-game__hud {
+  backdrop-filter: blur(18px);
+  background: color-mix(in srgb, #0c1218 82%, transparent);
+  border: 1px solid #344554;
+  border-radius: 8px;
+  left: 24px;
+  max-height: calc(100vh - 48px);
+  max-width: 380px;
+  overflow: auto;
+  padding: 18px;
+  position: absolute;
+  top: 24px;
+}
+
+.example-game__hud h1,
+.example-game__hud p {
+  margin: 0;
+}
+
+.example-game__hud h1 {
+  font-size: 20px;
+  font-weight: 560;
+  margin-bottom: 8px;
+}
+
+.example-game__hud p {
+  color: #9caab7;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.example-game__eyebrow {
+  color: #65a8ff !important;
+  font-size: 10px !important;
+  letter-spacing: 0.14em;
+  margin-bottom: 4px !important;
+  text-transform: uppercase;
+}
+
+.example-game__hud dl {
+  display: grid;
+  gap: 7px;
+  margin: 16px 0 0;
+}
+
+.example-game__hud dl div {
+  display: flex;
+  font-size: 11px;
+  justify-content: space-between;
+}
+
+.example-game__hud dt {
+  color: #778795;
+}
+
+.example-game__hud dd {
+  margin: 0;
+}
+
+.example-game__labels {
+  border-top: 1px solid #344554;
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 16px;
+}
+
+.example-game__labels label {
+  color: #9caab7;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.example-game__labels input {
+  background: #0a1016;
+  border: 1px solid #344554;
+  border-radius: 5px;
+  color: #e5edf5;
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+  padding: 9px 10px;
+  width: 100%;
+}
+
+.example-game__labels input:focus {
+  border-color: #65a8ff;
+  box-shadow: 0 0 0 2px #65a8ff24;
+}
+
+.example-game__storage-status {
+  color: #778795 !important;
+  font-size: 10px !important;
+}
+
+.example-game__label-list {
+  display: grid;
+  gap: 6px;
+}
+
+.example-game__label-list span {
+  background: #17222c;
+  border: 1px solid #293b4a;
+  border-radius: 4px;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+  padding: 7px 8px;
+}
