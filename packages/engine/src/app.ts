@@ -2,7 +2,7 @@ import type { Camera, Scene } from "@framework/three"
 import type { AppAssets } from "./assets.ts"
 import type { RenderProcess } from "./rendering/frame-pipeline.ts"
 
-export type AppTarget = "web" | "electron" | "mobile"
+export type AppTarget = "web" | "electron" | "android" | "ios"
 
 export interface AppConfig {
   readonly assetsDirectory: string

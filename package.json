@@ -16,7 +16,13 @@
     "dev:web": "vp dev apps/web",
     "test": "vp test"
   },
+  "dependencies": {
+    "@capacitor/core": "8.4.0"
+  },
   "devDependencies": {
+    "@capacitor/android": "8.4.0",
+    "@capacitor/cli": "8.4.0",
+    "@capacitor/ios": "8.4.0",
     "@types/node": "25.9.2",
     "@typescript/native-preview": "7.0.0-dev.20260609.1",
     "@voidzero-dev/vite-plus-core": "0.1.24",

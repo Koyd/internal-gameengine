@@ -1,0 +1,5 @@
+{
+  "appId": "dev.framework.example",
+  "appName": "Framework Example",
+  "webDir": "apps/web/dist"
+}

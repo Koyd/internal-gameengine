@@ -8,12 +8,12 @@ export default defineConfig({
   plugins: [preact()],
   server: {
     proxy: {
-      "^/(app-assets|rpc)": runtimeOrigin,
+      "^/(app-assets|mobile|rpc)": runtimeOrigin,
     },
   },
   preview: {
     proxy: {
-      "^/(app-assets|rpc)": runtimeOrigin,
+      "^/(app-assets|mobile|rpc)": runtimeOrigin,
     },
   },
 })

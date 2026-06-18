@@ -1,17 +1,18 @@
 # Framework
 
 Framework is a TypeScript workspace for iterating on the same interactive project across web,
-desktop, and future mobile targets. See [`docs/overview.md`](docs/overview.md) for architecture,
+desktop, and mobile targets. See [`docs/overview.md`](docs/overview.md) for architecture,
 ownership boundaries, and commands.
 
-The example's [`config.ts`](projects/example/src/config.ts) selects Electron as its primary target.
+The example's [`config.ts`](projects/example/src/config.ts) selects Android as its primary target.
 Build the configured target with:
 
 ```sh
 vp run example:build
 ```
 
-This produces `dist-desktop/framework-example-0.1.0-x86_64.AppImage`.
+This builds the web surface in Android mode, syncs it into the Capacitor Android project, and runs
+the Android release build.
 
 Run the explicit web target with:
 

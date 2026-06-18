@@ -52,6 +52,25 @@ export default defineConfig({
         ],
         cache: false,
       },
+      "example:build-android": {
+        command: [
+          "node --experimental-strip-types scripts/example-build.ts assert-mobile android",
+          "vp build apps/web --mode android",
+          "node --experimental-strip-types scripts/example-build.ts prepare-mobile-assets android",
+          "npx cap sync android",
+          "node --experimental-strip-types scripts/example-build.ts package-android",
+        ],
+        cache: false,
+      },
+      "example:build-ios": {
+        command: [
+          "node --experimental-strip-types scripts/example-build.ts assert-mobile ios",
+          "vp build apps/web --mode ios",
+          "node --experimental-strip-types scripts/example-build.ts prepare-mobile-assets ios",
+          "npx cap sync ios",
+        ],
+        cache: false,
+      },
     },
   },
 })

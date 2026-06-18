@@ -3,7 +3,7 @@
 ## Intent
 
 This repository is a project-oriented, multi-target TypeScript framework. It keeps iteration fast
-by letting the same project move between web, desktop, and future mobile hosts while retaining
+by letting the same project move between web, desktop, and mobile hosts while retaining
 shared contracts, runtime behavior, project configuration, rendering APIs, asset loading, and
 persistence semantics.
 
@@ -67,9 +67,10 @@ the transport, handlers, and SQLite service as explicit Layers:
 - Tests replace SQLite with [`AppStorage.memory`](../packages/runtime-domain/src/app-storage.ts)
   and [`UserState.memory`](../packages/runtime-domain/src/user-state.ts).
 
-An Electron main process should import `RuntimeHandlers`, provide the same platform services, and
-host `RuntimeRpcs` over an IPC protocol adapter. A future native mobile backend must implement the
-same schemas and semantics, even if it does not run Effect or TypeScript.
+An Electron main process imports `RuntimeHandlers`, provides the same platform services, and hosts
+the operations over an IPC protocol adapter. The mobile runtime uses the same tagged request schema
+over `/mobile/android` or `/mobile/ios`, preserving the same operation names, payload fields, and
+typed asset failures as the RPC and IPC adapters.
 
 The current desktop host follows that model:
 
@@ -79,8 +80,9 @@ The current desktop host follows that model:
   and starts the desktop library.
 - [`projects/example/src/config.ts`](../projects/example/src/config.ts) is the source of truth for
   target and title. Project code may import it directly.
-- The web host selects HTTP RPC for a `web` build and Electron IPC for an `electron` build without
-  exposing that choice to project UI or storage code.
+- The web host selects HTTP RPC for a `web` build, Electron IPC for an `electron` build, and the
+  mobile route for `android` or `ios` builds without exposing that choice to project UI or storage
+  code.
 
 ## Rendering
 
@@ -114,10 +116,11 @@ host supplies the RPC adapter and project ID; projects do not import Effect, RPC
 collections are isolated by app ID and persist in `.data/framework.sqlite`.
 
 Each project exports a typed [`config.ts`](../projects/example/src/config.ts). Its `target` selects the
-default build, and `title` is available to project code and host integrations. For the example,
-`vp run example:build` aliases to desktop packaging because its target is `electron`;
-`vp run example:build-desktop` fails before building if that target is changed. The explicit
-`vp run example:run` command builds the web development target.
+default build, and `title` is available to project code and host integrations. Valid targets are
+`web`, `electron`, `android`, and `ios`. For the example, `vp run example:build` syncs the Android
+Capacitor project because its target is `android`; changing the target to `ios` routes the same
+command to the iOS sync task. Explicit target tasks fail before building if the config target does
+not match.
 
 ## Assets
 
@@ -163,6 +166,8 @@ stream and response metadata rather than reading whole files. The browser compos
 the correct delivery URL without exposing RPC or IPC to the project. Desktop IPC wraps expected asset
 failures with [`RuntimeIpcFailure`](../packages/contracts/src/runtime-ipc.ts), preserving the typed
 error instead of flattening it into an unstructured invocation failure.
+The mobile route wraps the same expected asset failures with
+[`RuntimeMobileFailure`](../packages/contracts/src/runtime-mobile.ts).
 
 ## Toolchain
 
@@ -180,6 +185,8 @@ vp test
 vp run example:build
 vp run example:run
 vp run example:build-desktop
+vp run example:build-android
+vp run example:build-ios
 ```
 
 `vp run example:run` builds the example first, then starts the Effect runtime and serves the
@@ -187,6 +194,17 @@ production web build at `http://127.0.0.1:4173`.
 
 `vp run example:build-desktop` builds the renderer in Electron mode, bundles the minimal desktop
 main/preload processes, and produces an executable AppImage in `dist-desktop/`.
+
+`vp run example:build-android` builds the renderer in Android mode, copies project assets into the
+Capacitor web bundle, runs `cap sync android`, and then runs Gradle's `assembleRelease`. The
+Android release build reads signing settings from
+environment variables or untracked Gradle properties: `frameworkAndroidKeystorePath`,
+`frameworkAndroidKeystorePassword`, `frameworkAndroidKeyAlias`, and
+`frameworkAndroidKeyPassword`. The matching environment variables are
+`FRAMEWORK_ANDROID_KEYSTORE_PATH`, `FRAMEWORK_ANDROID_KEYSTORE_PASSWORD`,
+`FRAMEWORK_ANDROID_KEY_ALIAS`, and `FRAMEWORK_ANDROID_KEY_PASSWORD`. `vp run example:build-ios`
+builds the renderer in iOS mode, copies project assets into the Capacitor web bundle, and runs
+`cap sync ios`.
 
 ## Near-Term Systems
 

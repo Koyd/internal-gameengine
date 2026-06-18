@@ -6,6 +6,7 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
+    "@capacitor/core": "8.4.0",
     "@effect/platform-browser": "0.76.0",
     "@effect/rpc": "0.75.1",
     "@framework/contracts": "*",
