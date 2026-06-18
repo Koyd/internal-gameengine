@@ -97,6 +97,7 @@ export const gameAssetMatchesVersion = (asset: ResolvedGameAsset, ifNoneMatch?: 
 const contentTypes: Readonly<Record<string, string>> = {
   avif: "image/avif",
   bin: "application/octet-stream",
+  gdshader: "text/plain; charset=utf-8",
   glb: "model/gltf-binary",
   gltf: "model/gltf+json",
   jpeg: "image/jpeg",

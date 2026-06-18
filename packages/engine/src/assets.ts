@@ -1,4 +1,4 @@
-import { GLTFLoader, type Object3D } from "@internal/three"
+import { GLTFLoader, TextureLoader, type GLTF, type Object3D, type Texture } from "@internal/three"
 
 export type GameAssetPath = `://assets/${string}`
 
@@ -7,7 +7,10 @@ export interface GameAssetTransport {
 }
 
 export interface GameAssets {
+  readonly loadGLTF: (path: GameAssetPath) => Promise<GLTF>
   readonly loadModel: (path: GameAssetPath) => Promise<Object3D>
+  readonly loadText: (path: GameAssetPath) => Promise<string>
+  readonly loadTexture: (path: GameAssetPath) => Promise<Texture>
   readonly resolve: (path: GameAssetPath) => Promise<string>
 }
 
@@ -16,10 +19,16 @@ export const createGameAssets = (gameId: string, transport: GameAssetTransport):
 
   return {
     resolve,
-    loadModel: async (path) => {
+    loadGLTF: async (path) => {
       const url = await resolve(path)
-      const gltf = await new GLTFLoader().loadAsync(url)
-      return gltf.scene
+      return new GLTFLoader().loadAsync(url)
     },
+    loadModel: async (path) => (await new GLTFLoader().loadAsync(await resolve(path))).scene,
+    loadText: async (path) => {
+      const response = await fetch(await resolve(path))
+      if (!response.ok) throw new Error(`Failed to load text asset "${path}": ${response.status}`)
+      return response.text()
+    },
+    loadTexture: async (path) => new TextureLoader().loadAsync(await resolve(path)),
   }
 }

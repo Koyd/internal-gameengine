@@ -3,17 +3,18 @@ import type { GameConfig } from "@internal/engine/config"
 import { spawnSync } from "node:child_process"
 
 const action = process.argv[2]
+const config: GameConfig = exampleGameConfig
 
 if (action === "primary") {
   const task =
-    exampleGameConfig.target === "electron"
+    config.target === "electron"
       ? "example:build-desktop"
-      : exampleGameConfig.target === "web"
+      : config.target === "web"
         ? "example:build-web"
         : undefined
 
   if (!task) {
-    throw new Error(`No build implementation exists for target "${exampleGameConfig.target}"`)
+    throw new Error(`No build implementation exists for target "${config.target}"`)
   }
 
   const result = spawnSync("vp", ["run", task], { stdio: "inherit" })
@@ -21,12 +22,12 @@ if (action === "primary") {
 }
 
 if (action === "assert-electron") {
-  assertElectron(exampleGameConfig, "example:build-desktop")
+  assertElectron(config, "example:build-desktop")
   process.exit(0)
 }
 
 if (action === "package-electron") {
-  assertElectron(exampleGameConfig, "Desktop packaging")
+  assertElectron(config, "Desktop packaging")
 
   const result = spawnSync(
     "electron-builder",

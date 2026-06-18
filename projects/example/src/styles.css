@@ -72,6 +72,34 @@
   margin: 0;
 }
 
+.example-game__controls {
+  border-top: 1px solid #344554;
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 16px;
+}
+
+.example-game__controls label {
+  align-items: center;
+  color: #9caab7;
+  display: flex;
+  font-size: 11px;
+  font-weight: 600;
+  justify-content: space-between;
+}
+
+.example-game__controls output {
+  color: #e5edf5;
+  font-variant-numeric: tabular-nums;
+}
+
+.example-game__controls input[type="range"] {
+  accent-color: #65a8ff;
+  margin: 0;
+  width: 100%;
+}
+
 .example-game__labels {
   border-top: 1px solid #344554;
   display: grid;

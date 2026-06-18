@@ -1,17 +1,24 @@
-import { defineGame, defineRenderProcess } from "@internal/engine"
+import {
+  createFovPostprocessEffect,
+  createGodotSpatialShaderPreprocessEffect,
+  defineGame,
+  defineRenderProcess,
+} from "@internal/engine"
 import {
   AmbientLight,
+  AnimationMixer,
   Box3,
-  BoxGeometry,
   Color,
   DirectionalLight,
-  Mesh,
-  MeshStandardMaterial,
   PerspectiveCamera,
   Scene,
   Vector3,
 } from "@internal/three"
 import { exampleGameConfig } from "./config.ts"
+
+export const exampleGameEffects = {
+  fovDegrees: 60,
+}
 
 export const exampleGame = defineGame(exampleGameConfig, {
   createWorld: ({ assets }) => {
@@ -23,45 +30,55 @@ export const exampleGame = defineGame(exampleGameConfig, {
     key.position.set(2, 3, 4)
     scene.add(key)
 
-    const cube = new Mesh(
-      new BoxGeometry(1.4, 1.4, 1.4),
-      new MeshStandardMaterial({ color: 0x4f9cff, metalness: 0.35, roughness: 0.3 }),
-    )
-    scene.add(cube)
+    let femaleMixer: AnimationMixer | undefined
 
     void assets
-      .loadModel("://assets/adamHead/adamHead.gltf")
-      .then((model) => {
+      .loadGLTF("://assets/female.glb")
+      .then((gltf) => {
+        const model = gltf.scene
         const bounds = new Box3().setFromObject(model)
         const center = bounds.getCenter(new Vector3())
         const size = bounds.getSize(new Vector3())
-        const scale = 2.4 / Math.max(size.x, size.y, size.z)
+        const scale = 2.2 / Math.max(size.x, size.y, size.z)
         model.scale.setScalar(scale)
         model.position.copy(center.multiplyScalar(-scale))
-        model.position.x = 2.2
         scene.add(model)
+
+        const idle = gltf.animations.find((clip) => clip.name === "Idle") ?? gltf.animations[0]
+        if (!idle) {
+          console.warn("Female model loaded without animation clips")
+          return
+        }
+
+        femaleMixer = new AnimationMixer(model)
+        femaleMixer.clipAction(idle).play()
       })
       .catch((cause: unknown) => {
-        console.error("Failed to load Adam head model", cause)
+        console.error("Failed to load female model", cause)
       })
 
-    const camera = new PerspectiveCamera(60, 1, 0.1, 100)
-    camera.position.set(4, 2.2, 4)
-    camera.lookAt(cube.position)
+    const camera = new PerspectiveCamera(exampleGameEffects.fovDegrees, 1, 0.1, 100)
+    camera.position.set(0, 1.2, 4)
+    camera.lookAt(0, 0, 0)
 
     return {
       camera,
       scene,
       preprocess: [
-        defineRenderProcess("example.cube-translation", ({ elapsedSeconds }) => {
-          cube.position.y = Math.sin(elapsedSeconds * 1.8) * 0.85
-          cube.rotation.x = elapsedSeconds * 0.35
-          cube.rotation.y = elapsedSeconds * 0.55
+        createGodotSpatialShaderPreprocessEffect({
+          sampler2D: {
+            noise_tex: assets.loadTexture("://assets/noise_texture.webp"),
+          },
+          shader: assets.loadText("://assets/shaders/test.gdshader"),
         }),
-        defineRenderProcess("example.camera-orbit", ({ elapsedSeconds }) => {
-          const orbit = elapsedSeconds * 0.55
-          camera.position.set(Math.cos(orbit) * 5, 2.4, Math.sin(orbit) * 5)
-          camera.lookAt(cube.position)
+        defineRenderProcess("example.female-idle-animation", ({ deltaSeconds }) => {
+          femaleMixer?.update(deltaSeconds)
+        }),
+      ],
+      postprocess: [
+        createFovPostprocessEffect({
+          camera,
+          fov: () => exampleGameEffects.fovDegrees,
         }),
       ],
     }

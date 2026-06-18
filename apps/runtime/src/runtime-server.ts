@@ -12,6 +12,8 @@ import {
 import { Effect, Layer } from "effect"
 import { createServer } from "node:http"
 
+const runtimePort = Number(process.env["GAME_ENGINE_RUNTIME_PORT"] ?? 8787)
+
 const RpcRoute = RpcServer.layerHttpRouter({
   group: RuntimeRpcs,
   path: "/rpc",
@@ -58,6 +60,6 @@ const AssetRoute = HttpLayerRouter.add("GET", "/game-assets/:gameId/*", (request
 
 export const RuntimeServer = {
   layer: HttpLayerRouter.serve(Layer.merge(RpcRoute, AssetRoute)).pipe(
-    Layer.provide(NodeHttpServer.layer(createServer, { port: 8787 })),
+    Layer.provide(NodeHttpServer.layer(createServer, { port: runtimePort })),
   ),
 }

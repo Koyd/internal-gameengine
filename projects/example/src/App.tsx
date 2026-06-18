@@ -1,6 +1,6 @@
 import { GameViewport, useGameLocalStorage, type GameStorageRecord } from "@internal/engine"
 import { type FormEvent, useEffect, useMemo, useState } from "react"
-import { exampleGame } from "./game.ts"
+import { exampleGame, exampleGameEffects } from "./game.ts"
 import { exampleGameConfig } from "./config.ts"
 import "./styles.css"
 
@@ -9,6 +9,7 @@ export function ExampleGameApp() {
   const labelsStorage = useMemo(() => storage.collection("labels"), [storage])
   const [labels, setLabels] = useState<ReadonlyArray<GameStorageRecord>>([])
   const [value, setValue] = useState("")
+  const [fovDegrees, setFovDegrees] = useState(exampleGameEffects.fovDegrees)
   const [status, setStatus] = useState<"loading" | "ready" | "saving" | "error">("loading")
 
   useEffect(() => {
@@ -44,31 +45,51 @@ export function ExampleGameApp() {
     )
   }
 
+  const updateFov = (nextFov: number) => {
+    exampleGameEffects.fovDegrees = nextFov
+    setFovDegrees(nextFov)
+  }
+
   return (
     <main className="example-game">
       <GameViewport className="example-game__viewport" game={exampleGame} />
       <section className="example-game__hud" aria-label="Example game details">
         <p className="example-game__eyebrow">Internal Game Engine</p>
         <h1>{exampleGameConfig.title}</h1>
-        <p>Camera orbit and cube translation run as framebuffer-bound preprocesses.</p>
+        <p>Stationary model preview with ordered engine preprocess and postprocess effects.</p>
         <dl>
           <div>
             <dt>Camera</dt>
-            <dd>Orbiting</dd>
+            <dd>Stationary</dd>
           </div>
           <div>
-            <dt>Cube</dt>
-            <dd>Translating</dd>
+            <dt>Preprocess</dt>
+            <dd>Shader, animation</dd>
           </div>
           <div>
-            <dt>Target</dt>
-            <dd>Engine framebuffer</dd>
+            <dt>Postprocess</dt>
+            <dd>FOV</dd>
           </div>
           <div>
             <dt>Model</dt>
-            <dd>Runtime-cached Adam head</dd>
+            <dd>Female idle</dd>
           </div>
         </dl>
+        <section className="example-game__controls" aria-label="Render controls">
+          <label htmlFor="fov-control">
+            <span>FOV</span>
+            <output htmlFor="fov-control">{fovDegrees}°</output>
+          </label>
+          <input
+            id="fov-control"
+            max={95}
+            min={35}
+            onChange={(event) => updateFov(Number(event.currentTarget.value))}
+            step={1}
+            type="range"
+            value={fovDegrees}
+          />
+        </section>
         <form className="example-game__labels" onSubmit={submit}>
           <label htmlFor="persistent-label">Persistent label</label>
           <input
