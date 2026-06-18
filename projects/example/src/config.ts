@@ -1,8 +1,8 @@
-import { defineGameConfig } from "@internal/engine/config"
+import { defineAppConfig } from "@framework/engine/config"
 
-export const exampleGameConfig = defineGameConfig({
+export const exampleAppConfig = defineAppConfig({
   assetsDirectory: "projects/example/assets",
   id: "example",
   target: "electron",
-  title: "Internal Game Engine Example",
+  title: "Framework Example",
 })

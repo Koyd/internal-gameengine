@@ -1,46 +1,43 @@
-import { GameAssetError, type ResolvedGameAsset } from "@internal/contracts"
+import { AppAssetError, type ResolvedAppAsset } from "@framework/contracts"
 import { Context, Effect, Stream } from "effect"
 
-export interface GameAssetRange {
+export interface AppAssetRange {
   readonly end: number
   readonly length: number
   readonly start: number
 }
 
-export interface OpenGameAsset {
-  readonly asset: ResolvedGameAsset
-  readonly range?: GameAssetRange
-  readonly stream: Stream.Stream<Uint8Array, GameAssetError>
+export interface OpenAppAsset {
+  readonly asset: ResolvedAppAsset
+  readonly range?: AppAssetRange
+  readonly stream: Stream.Stream<Uint8Array, AppAssetError>
 }
 
-export interface GameAssetsShape {
+export interface AppAssetsShape {
   readonly open: (
-    gameId: string,
+    appId: string,
     path: string,
     range?: string,
-  ) => Effect.Effect<OpenGameAsset, GameAssetError>
-  readonly resolve: (
-    gameId: string,
-    path: string,
-  ) => Effect.Effect<ResolvedGameAsset, GameAssetError>
+  ) => Effect.Effect<OpenAppAsset, AppAssetError>
+  readonly resolve: (appId: string, path: string) => Effect.Effect<ResolvedAppAsset, AppAssetError>
 }
 
-export class GameAssets extends Context.Tag("@internal/runtime-domain/GameAssets")<
-  GameAssets,
-  GameAssetsShape
+export class AppAssets extends Context.Tag("@framework/runtime-domain/AppAssets")<
+  AppAssets,
+  AppAssetsShape
 >() {}
 
-export const gameAssetContentType = (path: string): string => {
+export const appAssetContentType = (path: string): string => {
   const extension = path.split(".").at(-1)?.toLowerCase()
   return contentTypes[extension ?? ""] ?? "application/octet-stream"
 }
 
-export const parseGameAssetRange = (
-  gameId: string,
+export const parseAppAssetRange = (
+  appId: string,
   path: string,
   size: number,
   header?: string,
-): Effect.Effect<GameAssetRange | undefined, GameAssetError> =>
+): Effect.Effect<AppAssetRange | undefined, AppAssetError> =>
   Effect.try({
     try: () => {
       if (!header) return undefined
@@ -64,24 +61,24 @@ export const parseGameAssetRange = (
       return { end, length: end - start + 1, start }
     },
     catch: (cause) =>
-      new GameAssetError({
-        gameId,
+      new AppAssetError({
+        appId,
         path,
         reason: "RangeNotSatisfiable",
         message: cause instanceof Error ? cause.message : String(cause),
       }),
   })
 
-export const gameAssetErrorStatus = (error: GameAssetError): number => {
+export const appAssetErrorStatus = (error: AppAssetError): number => {
   if (error.reason === "InvalidPath") return 400
   if (error.reason === "RangeNotSatisfiable") return 416
   if (error.reason === "Io") return 500
   return 404
 }
 
-export const gameAssetResponseHeaders = (
-  asset: ResolvedGameAsset,
-  range?: GameAssetRange,
+export const appAssetResponseHeaders = (
+  asset: ResolvedAppAsset,
+  range?: AppAssetRange,
 ): Readonly<Record<string, string>> => ({
   "accept-ranges": "bytes",
   "cache-control": "no-cache",
@@ -91,7 +88,7 @@ export const gameAssetResponseHeaders = (
   ...(range ? { "content-range": `bytes ${range.start}-${range.end}/${asset.size}` } : {}),
 })
 
-export const gameAssetMatchesVersion = (asset: ResolvedGameAsset, ifNoneMatch?: string): boolean =>
+export const appAssetMatchesVersion = (asset: ResolvedAppAsset, ifNoneMatch?: string): boolean =>
   ifNoneMatch?.split(",").some((value) => value.trim() === `"${asset.version}"`) ?? false
 
 const contentTypes: Readonly<Record<string, string>> = {

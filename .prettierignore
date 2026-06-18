@@ -1,4 +1,6 @@
 docs/effect-guide.md
 .data/
+android/
+ios/
 exampleGame/
 projects/*/assets/

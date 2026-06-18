@@ -10,7 +10,7 @@ import {
   RGBAFormat,
   Texture,
   type WebGLRenderer,
-} from "@internal/three"
+} from "@framework/three"
 import { defineRenderProcess, type RenderProcess } from "./frame-pipeline.ts"
 
 export interface GodotShaderUniform {

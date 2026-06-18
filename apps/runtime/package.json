@@ -1,9 +1,9 @@
 {
-  "name": "@internal/runtime",
+  "name": "@framework/runtime",
   "private": true,
   "type": "module",
   "exports": {
-    "./assets": "./src/services/filesystem-game-assets.ts",
+    "./assets": "./src/services/filesystem-app-assets.ts",
     "./persistence": "./src/persistence.ts"
   },
   "scripts": {
@@ -15,9 +15,9 @@
     "@effect/platform": "0.96.1",
     "@effect/platform-node": "0.107.0",
     "@effect/rpc": "0.75.1",
-    "@internal/contracts": "*",
-    "@internal/example-game": "*",
-    "@internal/runtime-domain": "*",
+    "@framework/contracts": "*",
+    "@framework/example-app": "*",
+    "@framework/runtime-domain": "*",
     "effect": "3.21.3"
   }
 }

@@ -1,23 +1,23 @@
-import { PerspectiveCamera } from "@internal/three"
-import { useEffect, useRef } from "react"
-import type { Game } from "../game.ts"
-import { useGameAssets } from "./game-assets.tsx"
+import { PerspectiveCamera } from "@framework/three"
+import { useEffect, useRef } from "preact/hooks"
+import type { App } from "../app.ts"
+import { useAppAssets } from "./app-assets.tsx"
 import { FramePipeline } from "../rendering/frame-pipeline.ts"
 
-export interface GameViewportProps {
+export interface AppViewportProps {
   readonly className?: string
-  readonly game: Game
+  readonly app: App
 }
 
-export function GameViewport({ className, game }: GameViewportProps) {
-  const assets = useGameAssets()
+export function AppViewport({ className, app }: AppViewportProps) {
+  const assets = useAppAssets()
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
 
-    const world = game.createWorld({ assets })
+    const world = app.createWorld({ assets })
     const pipeline = new FramePipeline({ canvas, ...world })
 
     const resize = () => {
@@ -38,7 +38,7 @@ export function GameViewport({ className, game }: GameViewportProps) {
       observer.disconnect()
       pipeline.dispose()
     }
-  }, [assets, game])
+  }, [assets, app])
 
   return <canvas className={className} ref={canvasRef} />
 }

@@ -1,35 +1,35 @@
 import { BrowserHttpClient } from "@effect/platform-browser"
 import { RpcClient, RpcSerialization } from "@effect/rpc"
 import {
-  type GameStorageEntry,
-  type ResolvedGameAsset,
+  type AppStorageEntry,
+  type ResolvedAppAsset,
   type RuntimeIpc,
   RuntimeIpcFailure,
   RuntimeRpcs,
   type UserSetting,
-} from "@internal/contracts"
+} from "@framework/contracts"
 import { Context, Effect, Layer, Schema } from "effect"
 
 export interface RuntimeClientShape {
   readonly health: Effect.Effect<{ readonly status: "ok"; readonly runtime: string }, unknown>
   readonly getUserSetting: (key: string) => Effect.Effect<UserSetting | null, unknown>
   readonly setUserSetting: (key: string, value: string) => Effect.Effect<UserSetting, unknown>
-  readonly listGameStorageEntries: (
-    gameId: string,
+  readonly listAppStorageEntries: (
+    appId: string,
     collection: string,
-  ) => Effect.Effect<ReadonlyArray<GameStorageEntry>, unknown>
-  readonly appendGameStorageEntry: (
-    gameId: string,
+  ) => Effect.Effect<ReadonlyArray<AppStorageEntry>, unknown>
+  readonly appendAppStorageEntry: (
+    appId: string,
     collection: string,
     value: string,
-  ) => Effect.Effect<GameStorageEntry, unknown>
-  readonly resolveGameAsset: (
-    gameId: string,
+  ) => Effect.Effect<AppStorageEntry, unknown>
+  readonly resolveAppAsset: (
+    appId: string,
     path: string,
-  ) => Effect.Effect<ResolvedGameAsset, unknown>
+  ) => Effect.Effect<ResolvedAppAsset, unknown>
 }
 
-export class RuntimeClient extends Context.Tag("@internal/clientstate/RuntimeClient")<
+export class RuntimeClient extends Context.Tag("@framework/clientstate/RuntimeClient")<
   RuntimeClient,
   RuntimeClientShape
 >() {
@@ -49,11 +49,11 @@ export class RuntimeClient extends Context.Tag("@internal/clientstate/RuntimeCli
             health: client.Health(),
             getUserSetting: (key) => client.GetUserSetting({ key }),
             setUserSetting: (key, value) => client.SetUserSetting({ key, value }),
-            listGameStorageEntries: (gameId, collection) =>
-              client.ListGameStorageEntries({ gameId, collection }),
-            appendGameStorageEntry: (gameId, collection, value) =>
-              client.AppendGameStorageEntry({ gameId, collection, value }),
-            resolveGameAsset: (gameId, path) => client.ResolveGameAsset({ gameId, path }),
+            listAppStorageEntries: (appId, collection) =>
+              client.ListAppStorageEntries({ appId, collection }),
+            appendAppStorageEntry: (appId, collection, value) =>
+              client.AppendAppStorageEntry({ appId, collection, value }),
+            resolveAppAsset: (appId, path) => client.ResolveAppAsset({ appId, path }),
           }),
         ),
         Effect.provide(protocol),
@@ -68,11 +68,11 @@ export class RuntimeClient extends Context.Tag("@internal/clientstate/RuntimeCli
         health: invoke(ipc, { _tag: "Health" }),
         getUserSetting: (key) => invoke(ipc, { _tag: "GetUserSetting", key }),
         setUserSetting: (key, value) => invoke(ipc, { _tag: "SetUserSetting", key, value }),
-        listGameStorageEntries: (gameId, collection) =>
-          invoke(ipc, { _tag: "ListGameStorageEntries", gameId, collection }),
-        appendGameStorageEntry: (gameId, collection, value) =>
-          invoke(ipc, { _tag: "AppendGameStorageEntry", gameId, collection, value }),
-        resolveGameAsset: (gameId, path) => invoke(ipc, { _tag: "ResolveGameAsset", gameId, path }),
+        listAppStorageEntries: (appId, collection) =>
+          invoke(ipc, { _tag: "ListAppStorageEntries", appId, collection }),
+        appendAppStorageEntry: (appId, collection, value) =>
+          invoke(ipc, { _tag: "AppendAppStorageEntry", appId, collection, value }),
+        resolveAppAsset: (appId, path) => invoke(ipc, { _tag: "ResolveAppAsset", appId, path }),
       }),
     )
 }

@@ -1,24 +1,24 @@
-import { GameAssetError, RuntimeIpcFailure, RuntimeIpcRequest } from "@internal/contracts"
-import type { GameConfig } from "@internal/engine"
-import { FileSystemGameAssets } from "@internal/runtime/assets"
-import { PersistenceLive } from "@internal/runtime/persistence"
+import { AppAssetError, RuntimeIpcFailure, RuntimeIpcRequest } from "@framework/contracts"
+import type { AppConfig } from "@framework/engine"
+import { FileSystemAppAssets } from "@framework/runtime/assets"
+import { PersistenceLive } from "@framework/runtime/persistence"
 import {
-  GameAssets,
-  gameAssetErrorStatus,
-  gameAssetMatchesVersion,
-  gameAssetResponseHeaders,
+  AppAssets,
+  appAssetErrorStatus,
+  appAssetMatchesVersion,
+  appAssetResponseHeaders,
   handleRuntimeRequest,
-} from "@internal/runtime-domain"
+} from "@framework/runtime-domain"
 import { Effect, Layer, ManagedRuntime, Schema, Stream } from "effect"
 import { app, BrowserWindow, ipcMain, protocol } from "electron"
 import { join } from "node:path"
 
-const channel = "game-engine:runtime"
+const channel = "framework:runtime"
 const decodeRequest = Schema.decodeUnknown(RuntimeIpcRequest)
 
 protocol.registerSchemesAsPrivileged([
   {
-    scheme: "game-asset",
+    scheme: "app-asset",
     privileges: {
       corsEnabled: true,
       secure: true,
@@ -29,34 +29,34 @@ protocol.registerSchemesAsPrivileged([
   },
 ])
 
-export const runDesktop = async (config: GameConfig): Promise<void> => {
+export const runDesktop = async (config: AppConfig): Promise<void> => {
   app.setName(config.title)
   await app.whenReady()
 
-  process.env["GAMEENGINE_STATE_PATH"] = join(app.getPath("userData"), "data", "game-engine.sqlite")
-  const GameAssetsLive = FileSystemGameAssets.layer({
-    gameId: config.id,
+  process.env["FRAMEWORK_STATE_PATH"] = join(app.getPath("userData"), "data", "framework.sqlite")
+  const AppAssetsLive = FileSystemAppAssets.layer({
+    appId: config.id,
     sourceDirectory: join(process.resourcesPath, config.assetsDirectory),
     cacheDirectory: join(app.getPath("userData"), "cache", "assets"),
   })
-  const runtime = ManagedRuntime.make(Layer.merge(PersistenceLive, GameAssetsLive))
+  const runtime = ManagedRuntime.make(Layer.merge(PersistenceLive, AppAssetsLive))
 
   ipcMain.handle(channel, (_event, input: unknown) =>
     runtime.runPromise(
       decodeRequest(input).pipe(
         Effect.flatMap(handleRuntimeRequest),
-        Effect.catchTag("GameAssetError", (error) =>
+        Effect.catchTag("AppAssetError", (error) =>
           Effect.succeed(new RuntimeIpcFailure({ _tag: "RuntimeIpcFailure", error })),
         ),
       ),
     ),
   )
 
-  protocol.handle("game-asset", async (request) => {
+  protocol.handle("app-asset", async (request) => {
     try {
       const url = new URL(request.url)
       const opened = await runtime.runPromise(
-        GameAssets.pipe(
+        AppAssets.pipe(
           Effect.flatMap((assets) =>
             assets.open(
               url.hostname,
@@ -68,29 +68,29 @@ export const runDesktop = async (config: GameConfig): Promise<void> => {
       )
       if (
         !opened.range &&
-        gameAssetMatchesVersion(opened.asset, request.headers.get("if-none-match") ?? undefined)
+        appAssetMatchesVersion(opened.asset, request.headers.get("if-none-match") ?? undefined)
       ) {
         return new Response(null, {
-          headers: gameAssetResponseHeaders(opened.asset),
+          headers: appAssetResponseHeaders(opened.asset),
           status: 304,
         })
       }
       return new Response(Stream.toReadableStream(opened.stream), {
-        headers: gameAssetResponseHeaders(opened.asset, opened.range),
+        headers: appAssetResponseHeaders(opened.asset, opened.range),
         status: opened.range ? 206 : 200,
       })
     } catch (cause) {
-      const error = Schema.is(GameAssetError)(cause)
+      const error = Schema.is(AppAssetError)(cause)
         ? cause
-        : new GameAssetError({
-            gameId: "",
+        : new AppAssetError({
+            appId: "",
             message: cause instanceof Error ? cause.message : String(cause),
             path: "",
             reason: "Io",
           })
       return new Response(error.message, {
         headers: { "accept-ranges": "bytes", "cache-control": "no-cache" },
-        status: gameAssetErrorStatus(error),
+        status: appAssetErrorStatus(error),
       })
     }
   })
@@ -116,7 +116,7 @@ export const runDesktop = async (config: GameConfig): Promise<void> => {
 
   app.on("before-quit", () => {
     ipcMain.removeHandler(channel)
-    protocol.unhandle("game-asset")
+    protocol.unhandle("app-asset")
     void runtime.dispose()
   })
 }

@@ -1,18 +1,15 @@
 {
-  "name": "@internal/example-game",
+  "name": "@framework/example-app",
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/game.ts",
+    ".": "./src/app.ts",
     "./config": "./src/config.ts",
-    "./react": "./src/App.tsx"
+    "./preact": "./src/App.tsx"
   },
   "dependencies": {
-    "@internal/engine": "*",
-    "@internal/three": "*",
-    "react": "19.2.7"
-  },
-  "devDependencies": {
-    "@types/react": "19.2.14"
+    "@framework/engine": "*",
+    "@framework/three": "*",
+    "preact": "10.29.2"
   }
 }

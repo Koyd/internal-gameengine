@@ -9,10 +9,6 @@ export default defineConfig({
     },
     overrides: [
       {
-        files: ["apps/web/**"],
-        plugins: ["typescript", "react"],
-      },
-      {
         files: ["**/*.test.ts", "**/*.test.tsx"],
         plugins: ["typescript", "vitest"],
       },
@@ -43,7 +39,7 @@ export default defineConfig({
       },
       "example:run": {
         command:
-          "vp run --parallel --filter @internal/runtime --filter @internal/web example:serve",
+          "vp run --parallel --filter @framework/runtime --filter @framework/web example:serve",
         dependsOn: ["example:build-web"],
         cache: false,
       },
@@ -52,7 +48,7 @@ export default defineConfig({
           "node --experimental-strip-types scripts/example-build.ts assert-electron",
           "vp build apps/web --mode desktop",
           "vp build apps/desktop",
-          "vp run @internal/desktop-app#pack",
+          "vp run @framework/desktop-app#pack",
         ],
         cache: false,
       },

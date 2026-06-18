@@ -5,7 +5,7 @@ import {
   PerspectiveCamera,
   type Camera,
   type WebGLRenderer,
-} from "@internal/three"
+} from "@framework/three"
 import { defineRenderProcess, type FrameContext, type RenderProcess } from "./frame-pipeline.ts"
 
 type EffectValue = number | ((context: FrameContext) => number)

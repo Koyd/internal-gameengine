@@ -1,4 +1,4 @@
-appId: com.internal.gameengine.example
+appId: com.framework.example
 directories:
   output: ../../dist-desktop
 files:
@@ -12,8 +12,8 @@ extraResources:
 asar: true
 npmRebuild: false
 linux:
-  executableName: internal-game-engine-example
+  executableName: framework-example
   target:
     - AppImage
-  category: Game
-artifactName: internal-game-engine-example-${version}-${arch}.${ext}
+  category: Development
+artifactName: framework-example-${version}-${arch}.${ext}

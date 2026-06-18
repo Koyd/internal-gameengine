@@ -1,5 +1,5 @@
 {
-  "name": "@internal/three",
+  "name": "@framework/three",
   "private": true,
   "type": "module",
   "exports": {

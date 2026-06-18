@@ -1,5 +1,5 @@
 {
-  "name": "@internal/runtime-domain",
+  "name": "@framework/runtime-domain",
   "private": true,
   "type": "module",
   "exports": {
@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "@effect/rpc": "0.75.1",
-    "@internal/contracts": "*",
+    "@framework/contracts": "*",
     "effect": "3.21.3"
   }
 }

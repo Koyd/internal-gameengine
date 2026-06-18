@@ -8,7 +8,7 @@ import {
   Scene,
   WebGLRenderTarget,
   WebGLRenderer,
-} from "@internal/three"
+} from "@framework/three"
 
 export interface FrameContext {
   readonly camera: Camera

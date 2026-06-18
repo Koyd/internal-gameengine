@@ -1,12 +1,12 @@
 import { Context, Effect, Layer, Ref } from "effect"
-import type { UserSetting } from "@internal/contracts"
+import type { UserSetting } from "@framework/contracts"
 
 export interface UserStateShape {
   readonly get: (key: string) => Effect.Effect<UserSetting | null>
   readonly set: (key: string, value: string) => Effect.Effect<UserSetting>
 }
 
-export class UserState extends Context.Tag("@internal/runtime-domain/UserState")<
+export class UserState extends Context.Tag("@framework/runtime-domain/UserState")<
   UserState,
   UserStateShape
 >() {

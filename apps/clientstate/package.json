@@ -1,5 +1,5 @@
 {
-  "name": "@internal/clientstate",
+  "name": "@framework/clientstate",
   "private": true,
   "type": "module",
   "exports": {
@@ -8,7 +8,7 @@
   "dependencies": {
     "@effect/platform-browser": "0.76.0",
     "@effect/rpc": "0.75.1",
-    "@internal/contracts": "*",
+    "@framework/contracts": "*",
     "effect": "3.21.3"
   }
 }

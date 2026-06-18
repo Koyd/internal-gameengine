@@ -1,50 +1,50 @@
 import { NodeStream } from "@effect/platform-node"
-import { GameAssetError, ResolvedGameAsset } from "@internal/contracts"
-import { GameAssets, gameAssetContentType, parseGameAssetRange } from "@internal/runtime-domain"
+import { AppAssetError, ResolvedAppAsset } from "@framework/contracts"
+import { AppAssets, appAssetContentType, parseAppAssetRange } from "@framework/runtime-domain"
 import { Effect, Layer } from "effect"
 import { createReadStream } from "node:fs"
 import { copyFile, mkdir, stat } from "node:fs/promises"
 import { dirname, relative, resolve, sep } from "node:path"
 
-export interface FileSystemGameAssetsOptions {
+export interface FileSystemAppAssetsOptions {
   readonly cacheDirectory: string
-  readonly gameId: string
+  readonly appId: string
   readonly sourceDirectory: string
 }
 
 const assetPrefix = "://assets/"
 
-export const FileSystemGameAssets = {
-  layer: ({ cacheDirectory, gameId, sourceDirectory }: FileSystemGameAssetsOptions) =>
+export const FileSystemAppAssets = {
+  layer: ({ cacheDirectory, appId, sourceDirectory }: FileSystemAppAssetsOptions) =>
     Layer.succeed(
-      GameAssets,
-      GameAssets.of({
-        resolve: (requestedGameId, path) =>
+      AppAssets,
+      AppAssets.of({
+        resolve: (requestedAppId, path) =>
           resolveCachedAsset({
             cacheDirectory,
-            gameId,
-            requestedGameId,
+            appId,
+            requestedAppId,
             sourceDirectory,
             path,
           }).pipe(Effect.map(({ cachePath: _cachePath, ...asset }) => asset)),
-        open: (requestedGameId, path, rangeHeader) =>
+        open: (requestedAppId, path, rangeHeader) =>
           Effect.gen(function* () {
             const cached = yield* resolveCachedAsset({
               cacheDirectory,
-              gameId,
-              requestedGameId,
+              appId,
+              requestedAppId,
               sourceDirectory,
               path,
             })
-            const range = yield* parseGameAssetRange(
-              cached.gameId,
+            const range = yield* parseAppAssetRange(
+              cached.appId,
               cached.path,
               cached.size,
               rangeHeader,
             )
             const stream = NodeStream.fromReadable(
               () => createReadStream(cached.cachePath, range),
-              (cause) => assetError(cached.gameId, cached.path, "Io", cause),
+              (cause) => assetError(cached.appId, cached.path, "Io", cause),
             )
             const { cachePath: _cachePath, ...asset } = cached
             return { asset, stream, ...(range ? { range } : {}) }
@@ -53,35 +53,35 @@ export const FileSystemGameAssets = {
     ),
 }
 
-interface CachedAsset extends ResolvedGameAsset {
+interface CachedAsset extends ResolvedAppAsset {
   readonly cachePath: string
 }
 
-interface ResolveOptions extends FileSystemGameAssetsOptions {
+interface ResolveOptions extends FileSystemAppAssetsOptions {
   readonly path: string
-  readonly requestedGameId: string
+  readonly requestedAppId: string
 }
 
 const resolveCachedAsset = ({
   cacheDirectory,
-  gameId,
+  appId,
   path,
-  requestedGameId,
+  requestedAppId,
   sourceDirectory,
-}: ResolveOptions): Effect.Effect<CachedAsset, GameAssetError> =>
+}: ResolveOptions): Effect.Effect<CachedAsset, AppAssetError> =>
   Effect.tryPromise({
     try: async () => {
-      if (requestedGameId !== gameId) {
-        throw assetError(requestedGameId, path, "UnknownGame", `Unknown game "${requestedGameId}"`)
+      if (requestedAppId !== appId) {
+        throw assetError(requestedAppId, path, "UnknownApp", `Unknown app "${requestedAppId}"`)
       }
 
-      const assetPath = normalizeAssetPath(gameId, path)
-      const sourcePath = inside(gameId, assetPath, sourceDirectory)
-      const cachePath = inside(gameId, assetPath, cacheDirectory)
+      const assetPath = normalizeAssetPath(appId, path)
+      const sourcePath = inside(appId, assetPath, sourceDirectory)
+      const cachePath = inside(appId, assetPath, cacheDirectory)
       const source = await stat(sourcePath).catch((cause: unknown) => {
-        throw assetError(gameId, assetPath, isNotFound(cause) ? "NotFound" : "Io", cause)
+        throw assetError(appId, assetPath, isNotFound(cause) ? "NotFound" : "Io", cause)
       })
-      if (!source.isFile()) throw assetError(gameId, assetPath, "NotFile", "Asset is not a file")
+      if (!source.isFile()) throw assetError(appId, assetPath, "NotFile", "Asset is not a file")
 
       let cached = false
       try {
@@ -97,8 +97,8 @@ const resolveCachedAsset = ({
       }
 
       return {
-        contentType: gameAssetContentType(assetPath),
-        gameId,
+        contentType: appAssetContentType(assetPath),
+        appId,
         path: assetPath,
         size: source.size,
         version: `${source.size}-${Math.trunc(source.mtimeMs)}`,
@@ -106,42 +106,42 @@ const resolveCachedAsset = ({
       }
     },
     catch: (cause) =>
-      cause instanceof GameAssetError ? cause : assetError(gameId, path, "Io", cause),
+      cause instanceof AppAssetError ? cause : assetError(appId, path, "Io", cause),
   })
 
-const normalizeAssetPath = (gameId: string, path: string): string => {
+const normalizeAssetPath = (appId: string, path: string): string => {
   let decoded: string
   try {
     decoded = decodeURIComponent(
       path.startsWith(assetPrefix) ? path.slice(assetPrefix.length) : path,
     )
   } catch (cause) {
-    throw assetError(gameId, path, "InvalidPath", cause)
+    throw assetError(appId, path, "InvalidPath", cause)
   }
   if (!decoded || decoded.startsWith("/") || decoded.includes("\0")) {
-    throw assetError(gameId, path, "InvalidPath", "Asset path is empty or absolute")
+    throw assetError(appId, path, "InvalidPath", "Asset path is empty or absolute")
   }
   return decoded
 }
 
-const inside = (gameId: string, path: string, root: string): string => {
+const inside = (appId: string, path: string, root: string): string => {
   const absoluteRoot = resolve(root)
   const absolutePath = resolve(absoluteRoot, path)
   const child = relative(absoluteRoot, absolutePath)
   if (!child || child === ".." || child.startsWith(`..${sep}`)) {
-    throw assetError(gameId, path, "InvalidPath", "Asset path escapes its configured directory")
+    throw assetError(appId, path, "InvalidPath", "Asset path escapes its configured directory")
   }
   return absolutePath
 }
 
 const assetError = (
-  gameId: string,
+  appId: string,
   path: string,
-  reason: GameAssetError["reason"],
+  reason: AppAssetError["reason"],
   cause: unknown,
-): GameAssetError =>
-  new GameAssetError({
-    gameId,
+): AppAssetError =>
+  new AppAssetError({
+    appId,
     path,
     reason,
     message: cause instanceof Error ? cause.message : String(cause),

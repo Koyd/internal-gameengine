@@ -1,21 +1,21 @@
-import { GLTFLoader, TextureLoader, type GLTF, type Object3D, type Texture } from "@internal/three"
+import { GLTFLoader, TextureLoader, type GLTF, type Object3D, type Texture } from "@framework/three"
 
-export type GameAssetPath = `://assets/${string}`
+export type AppAssetPath = `://assets/${string}`
 
-export interface GameAssetTransport {
-  readonly resolve: (gameId: string, path: GameAssetPath) => Promise<string>
+export interface AppAssetTransport {
+  readonly resolve: (appId: string, path: AppAssetPath) => Promise<string>
 }
 
-export interface GameAssets {
-  readonly loadGLTF: (path: GameAssetPath) => Promise<GLTF>
-  readonly loadModel: (path: GameAssetPath) => Promise<Object3D>
-  readonly loadText: (path: GameAssetPath) => Promise<string>
-  readonly loadTexture: (path: GameAssetPath) => Promise<Texture>
-  readonly resolve: (path: GameAssetPath) => Promise<string>
+export interface AppAssets {
+  readonly loadGLTF: (path: AppAssetPath) => Promise<GLTF>
+  readonly loadModel: (path: AppAssetPath) => Promise<Object3D>
+  readonly loadText: (path: AppAssetPath) => Promise<string>
+  readonly loadTexture: (path: AppAssetPath) => Promise<Texture>
+  readonly resolve: (path: AppAssetPath) => Promise<string>
 }
 
-export const createGameAssets = (gameId: string, transport: GameAssetTransport): GameAssets => {
-  const resolve = (path: GameAssetPath) => transport.resolve(gameId, path)
+export const createAppAssets = (appId: string, transport: AppAssetTransport): AppAssets => {
+  const resolve = (path: AppAssetPath) => transport.resolve(appId, path)
 
   return {
     resolve,

@@ -1,19 +1,19 @@
-import react from "@vitejs/plugin-react"
+import preact from "@preact/preset-vite"
 import { defineConfig } from "vite-plus"
 
-const runtimeOrigin = `http://localhost:${process.env["GAME_ENGINE_RUNTIME_PORT"] ?? "8787"}`
+const runtimeOrigin = `http://localhost:${process.env["FRAMEWORK_RUNTIME_PORT"] ?? "8787"}`
 
 export default defineConfig({
   base: "./",
-  plugins: [react()],
+  plugins: [preact()],
   server: {
     proxy: {
-      "^/(game-assets|rpc)": runtimeOrigin,
+      "^/(app-assets|rpc)": runtimeOrigin,
     },
   },
   preview: {
     proxy: {
-      "^/(game-assets|rpc)": runtimeOrigin,
+      "^/(app-assets|rpc)": runtimeOrigin,
     },
   },
 })

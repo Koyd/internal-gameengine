@@ -7,28 +7,28 @@ export class UserSetting extends Schema.Class<UserSetting>("UserSetting")({
   updatedAt: Schema.String,
 }) {}
 
-export class GameStorageEntry extends Schema.Class<GameStorageEntry>("GameStorageEntry")({
+export class AppStorageEntry extends Schema.Class<AppStorageEntry>("AppStorageEntry")({
   id: Schema.Number,
-  gameId: Schema.NonEmptyString,
+  appId: Schema.NonEmptyString,
   collection: Schema.NonEmptyString,
   value: Schema.String,
   createdAt: Schema.String,
 }) {}
 
-export class ResolvedGameAsset extends Schema.Class<ResolvedGameAsset>("ResolvedGameAsset")({
+export class ResolvedAppAsset extends Schema.Class<ResolvedAppAsset>("ResolvedAppAsset")({
   contentType: Schema.NonEmptyString,
-  gameId: Schema.NonEmptyString,
+  appId: Schema.NonEmptyString,
   path: Schema.NonEmptyString,
   size: Schema.Number,
   version: Schema.NonEmptyString,
 }) {}
 
-export class GameAssetError extends Schema.TaggedError<GameAssetError>()("GameAssetError", {
-  gameId: Schema.String,
+export class AppAssetError extends Schema.TaggedError<AppAssetError>()("AppAssetError", {
+  appId: Schema.String,
   message: Schema.String,
   path: Schema.String,
   reason: Schema.Literal(
-    "UnknownGame",
+    "UnknownApp",
     "InvalidPath",
     "NotFound",
     "NotFile",
@@ -55,27 +55,27 @@ export class RuntimeRpcs extends RpcGroup.make(
     },
     success: UserSetting,
   }),
-  Rpc.make("ListGameStorageEntries", {
+  Rpc.make("ListAppStorageEntries", {
     payload: {
-      gameId: Schema.NonEmptyString,
+      appId: Schema.NonEmptyString,
       collection: Schema.NonEmptyString,
     },
-    success: Schema.Array(GameStorageEntry),
+    success: Schema.Array(AppStorageEntry),
   }),
-  Rpc.make("AppendGameStorageEntry", {
+  Rpc.make("AppendAppStorageEntry", {
     payload: {
-      gameId: Schema.NonEmptyString,
+      appId: Schema.NonEmptyString,
       collection: Schema.NonEmptyString,
       value: Schema.String,
     },
-    success: GameStorageEntry,
+    success: AppStorageEntry,
   }),
-  Rpc.make("ResolveGameAsset", {
+  Rpc.make("ResolveAppAsset", {
     payload: {
-      gameId: Schema.NonEmptyString,
+      appId: Schema.NonEmptyString,
       path: Schema.NonEmptyString,
     },
-    error: GameAssetError,
-    success: ResolvedGameAsset,
+    error: AppAssetError,
+    success: ResolvedAppAsset,
   }),
 ) {}

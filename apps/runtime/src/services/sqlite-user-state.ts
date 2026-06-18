@@ -1,5 +1,5 @@
-import { UserSetting } from "@internal/contracts"
-import { UserState } from "@internal/runtime-domain"
+import { UserSetting } from "@framework/contracts"
+import { UserState } from "@framework/runtime-domain"
 import { Effect, Layer } from "effect"
 import { SqliteDatabase } from "./sqlite-database.ts"
 

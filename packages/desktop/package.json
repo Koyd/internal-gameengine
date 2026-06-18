@@ -1,5 +1,5 @@
 {
-  "name": "@internal/desktop",
+  "name": "@framework/desktop",
   "private": true,
   "type": "module",
   "exports": {
@@ -7,10 +7,10 @@
     "./preload": "./src/preload.ts"
   },
   "dependencies": {
-    "@internal/contracts": "*",
-    "@internal/engine": "*",
-    "@internal/runtime": "*",
-    "@internal/runtime-domain": "*",
+    "@framework/contracts": "*",
+    "@framework/engine": "*",
+    "@framework/runtime": "*",
+    "@framework/runtime-domain": "*",
     "effect": "3.21.3",
     "electron": "42.4.0"
   }

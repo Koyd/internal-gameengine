@@ -1,18 +1,18 @@
 import { HttpLayerRouter, HttpRouter, HttpServerResponse } from "@effect/platform"
 import { NodeHttpServer } from "@effect/platform-node"
 import { RpcSerialization, RpcServer } from "@effect/rpc"
-import { RuntimeRpcs } from "@internal/contracts"
+import { RuntimeRpcs } from "@framework/contracts"
 import {
-  GameAssets,
-  gameAssetErrorStatus,
-  gameAssetMatchesVersion,
-  gameAssetResponseHeaders,
+  AppAssets,
+  appAssetErrorStatus,
+  appAssetMatchesVersion,
+  appAssetResponseHeaders,
   RuntimeHandlers,
-} from "@internal/runtime-domain"
+} from "@framework/runtime-domain"
 import { Effect, Layer } from "effect"
 import { createServer } from "node:http"
 
-const runtimePort = Number(process.env["GAME_ENGINE_RUNTIME_PORT"] ?? 8787)
+const runtimePort = Number(process.env["FRAMEWORK_RUNTIME_PORT"] ?? 8787)
 
 const RpcRoute = RpcServer.layerHttpRouter({
   group: RuntimeRpcs,
@@ -24,23 +24,23 @@ const RpcRoute = RpcServer.layerHttpRouter({
   Layer.provide(HttpLayerRouter.cors()),
 )
 
-const AssetRoute = HttpLayerRouter.add("GET", "/game-assets/:gameId/*", (request) =>
+const AssetRoute = HttpLayerRouter.add("GET", "/app-assets/:appId/*", (request) =>
   Effect.gen(function* () {
     const params = yield* HttpRouter.params
-    const gameAssets = yield* GameAssets
-    const opened = yield* gameAssets.open(
-      params["gameId"] ?? "",
+    const appAssets = yield* AppAssets
+    const opened = yield* appAssets.open(
+      params["appId"] ?? "",
       params["*"] ?? "",
       request.headers["range"],
     )
-    if (!opened.range && gameAssetMatchesVersion(opened.asset, request.headers["if-none-match"])) {
+    if (!opened.range && appAssetMatchesVersion(opened.asset, request.headers["if-none-match"])) {
       return HttpServerResponse.empty({
-        headers: gameAssetResponseHeaders(opened.asset),
+        headers: appAssetResponseHeaders(opened.asset),
         status: 304,
       })
     }
     return HttpServerResponse.stream(opened.stream, {
-      headers: gameAssetResponseHeaders(opened.asset, opened.range),
+      headers: appAssetResponseHeaders(opened.asset, opened.range),
       status: opened.range ? 206 : 200,
     })
   }).pipe(
@@ -51,7 +51,7 @@ const AssetRoute = HttpLayerRouter.add("GET", "/game-assets/:gameId/*", (request
             "accept-ranges": "bytes",
             "cache-control": "no-cache",
           },
-          status: gameAssetErrorStatus(error),
+          status: appAssetErrorStatus(error),
         }),
       ),
     ),

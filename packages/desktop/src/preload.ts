@@ -1,8 +1,8 @@
-import type { RuntimeIpc, RuntimeIpcRequest } from "@internal/contracts"
+import type { RuntimeIpc, RuntimeIpcRequest } from "@framework/contracts"
 import { contextBridge, ipcRenderer } from "electron"
 
 const runtimeIpc: RuntimeIpc = {
-  invoke: (request: RuntimeIpcRequest) => ipcRenderer.invoke("game-engine:runtime", request),
+  invoke: (request: RuntimeIpcRequest) => ipcRenderer.invoke("framework:runtime", request),
 }
 
-contextBridge.exposeInMainWorld("gameEngineDesktop", runtimeIpc)
+contextBridge.exposeInMainWorld("frameworkDesktop", runtimeIpc)

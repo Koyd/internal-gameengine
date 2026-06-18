@@ -1,1 +1,1 @@
-import "@internal/desktop/preload"
+import "@framework/desktop/preload"

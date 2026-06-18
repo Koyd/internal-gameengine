@@ -1,8 +1,8 @@
-import type { RuntimeIpc } from "@internal/contracts"
+import type { RuntimeIpc } from "@framework/contracts"
 
 declare global {
   interface Window {
-    readonly gameEngineDesktop?: RuntimeIpc
+    readonly frameworkDesktop?: RuntimeIpc
   }
 }
 

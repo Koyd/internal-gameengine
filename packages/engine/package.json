@@ -1,16 +1,13 @@
 {
-  "name": "@internal/engine",
+  "name": "@framework/engine",
   "private": true,
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./config": "./src/game.ts"
+    "./config": "./src/app.ts"
   },
   "dependencies": {
-    "@internal/three": "*",
-    "react": "19.2.7"
-  },
-  "devDependencies": {
-    "@types/react": "19.2.14"
+    "@framework/three": "*",
+    "preact": "10.29.2"
   }
 }

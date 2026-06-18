@@ -1,9 +1,9 @@
 {
-  "name": "@internal/desktop-app",
+  "name": "@framework/desktop-app",
   "version": "0.1.0",
   "private": true,
-  "description": "Electron host for the internal game engine example",
-  "author": "Internal Game Engine",
+  "description": "Electron host for the framework example",
+  "author": "Framework",
   "type": "module",
   "main": "dist/main.cjs",
   "scripts": {
@@ -11,10 +11,10 @@
     "pack": "node --experimental-strip-types ../../scripts/example-build.ts package-electron"
   },
   "devDependencies": {
-    "@internal/desktop": "*",
-    "@internal/example-game": "*",
+    "@framework/desktop": "*",
+    "@framework/example-app": "*",
     "electron": "42.4.0",
     "electron-builder": "26.15.2"
   },
-  "desktopName": "Internal Game Engine Example"
+  "desktopName": "Framework Example"
 }

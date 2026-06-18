@@ -1,29 +1,29 @@
-export interface GameStorageRecord {
+export interface AppStorageRecord {
   readonly id: number
   readonly value: string
   readonly createdAt: string
 }
 
-export interface GameStorageCollection {
-  readonly list: () => Promise<ReadonlyArray<GameStorageRecord>>
-  readonly append: (value: string) => Promise<GameStorageRecord>
+export interface AppStorageCollection {
+  readonly list: () => Promise<ReadonlyArray<AppStorageRecord>>
+  readonly append: (value: string) => Promise<AppStorageRecord>
 }
 
-export interface GameLocalStorage {
-  readonly collection: (name: string) => GameStorageCollection
+export interface AppLocalStorage {
+  readonly collection: (name: string) => AppStorageCollection
 }
 
-export interface GameStorageTransport {
-  readonly list: (gameId: string, collection: string) => Promise<ReadonlyArray<GameStorageRecord>>
-  readonly append: (gameId: string, collection: string, value: string) => Promise<GameStorageRecord>
+export interface AppStorageTransport {
+  readonly list: (appId: string, collection: string) => Promise<ReadonlyArray<AppStorageRecord>>
+  readonly append: (appId: string, collection: string, value: string) => Promise<AppStorageRecord>
 }
 
-export const createGameLocalStorage = (
-  gameId: string,
-  transport: GameStorageTransport,
-): GameLocalStorage => ({
+export const createAppLocalStorage = (
+  appId: string,
+  transport: AppStorageTransport,
+): AppLocalStorage => ({
   collection: (name) => ({
-    list: () => transport.list(gameId, name),
-    append: (value) => transport.append(gameId, name, value),
+    list: () => transport.list(appId, name),
+    append: (value) => transport.append(appId, name, value),
   }),
 })

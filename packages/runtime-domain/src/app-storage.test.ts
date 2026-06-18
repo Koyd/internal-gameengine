@@ -1,16 +1,16 @@
 import { Effect } from "effect"
 import { describe, expect, it } from "vite-plus/test"
-import { GameStorage } from "./game-storage.ts"
+import { AppStorage } from "./app-storage.ts"
 
-describe("GameStorage.memory", () => {
-  it("isolates entries by game and collection", async () => {
+describe("AppStorage.memory", () => {
+  it("isolates entries by app and collection", async () => {
     const entries = await Effect.runPromise(
       Effect.gen(function* () {
-        const storage = yield* GameStorage
+        const storage = yield* AppStorage
         yield* storage.append("example", "labels", "first")
         yield* storage.append("other", "labels", "hidden")
         return yield* storage.list("example", "labels")
-      }).pipe(Effect.provide(GameStorage.memory)),
+      }).pipe(Effect.provide(AppStorage.memory)),
     )
 
     expect(entries.map((entry) => entry.value)).toEqual(["first"])

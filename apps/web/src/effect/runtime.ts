@@ -1,17 +1,17 @@
-import { RuntimeClient } from "@internal/clientstate"
+import { RuntimeClient } from "@framework/clientstate"
 import {
-  createGameAssets,
-  createGameLocalStorage,
-  type GameAssets,
-  type GameConfig,
-  type GameLocalStorage,
-} from "@internal/engine"
+  createAppAssets,
+  createAppLocalStorage,
+  type AppAssets,
+  type AppConfig,
+  type AppLocalStorage,
+} from "@framework/engine"
 import { Effect, ManagedRuntime } from "effect"
 
 const layer =
-  import.meta.env["VITE_GAME_TARGET"] === "electron"
+  import.meta.env["VITE_APP_TARGET"] === "electron"
     ? RuntimeClient.ipc(
-        window.gameEngineDesktop ??
+        window.frameworkDesktop ??
           ({
             invoke: () => Promise.reject(new Error("Electron IPC bridge is unavailable")),
           } as const),
@@ -22,34 +22,34 @@ export const BrowserRuntime = ManagedRuntime.make(layer)
 
 export const getRuntimeHealth = RuntimeClient.pipe(Effect.flatMap((client) => client.health))
 
-export const createRuntimeGameAssets = (config: GameConfig): GameAssets =>
-  createGameAssets(config.id, {
-    resolve: (gameId, path) =>
+export const createRuntimeAppAssets = (config: AppConfig): AppAssets =>
+  createAppAssets(config.id, {
+    resolve: (appId, path) =>
       BrowserRuntime.runPromise(
         RuntimeClient.pipe(
-          Effect.flatMap((client) => client.resolveGameAsset(gameId, path)),
+          Effect.flatMap((client) => client.resolveAppAsset(appId, path)),
           Effect.map((asset) =>
-            import.meta.env["VITE_GAME_TARGET"] === "electron"
-              ? `game-asset://${encodeURIComponent(asset.gameId)}/${encodeAssetPath(asset.path)}`
-              : `/game-assets/${encodeURIComponent(asset.gameId)}/${encodeAssetPath(asset.path)}`,
+            import.meta.env["VITE_APP_TARGET"] === "electron"
+              ? `app-asset://${encodeURIComponent(asset.appId)}/${encodeAssetPath(asset.path)}`
+              : `/app-assets/${encodeURIComponent(asset.appId)}/${encodeAssetPath(asset.path)}`,
           ),
         ),
       ),
   })
 
-export const createRuntimeGameLocalStorage = (config: GameConfig): GameLocalStorage =>
-  createGameLocalStorage(config.id, {
-    list: (requestedGameId, collection) =>
+export const createRuntimeAppLocalStorage = (config: AppConfig): AppLocalStorage =>
+  createAppLocalStorage(config.id, {
+    list: (requestedAppId, collection) =>
       BrowserRuntime.runPromise(
         RuntimeClient.pipe(
-          Effect.flatMap((client) => client.listGameStorageEntries(requestedGameId, collection)),
+          Effect.flatMap((client) => client.listAppStorageEntries(requestedAppId, collection)),
         ),
       ),
-    append: (requestedGameId, collection, value) =>
+    append: (requestedAppId, collection, value) =>
       BrowserRuntime.runPromise(
         RuntimeClient.pipe(
           Effect.flatMap((client) =>
-            client.appendGameStorageEntry(requestedGameId, collection, value),
+            client.appendAppStorageEntry(requestedAppId, collection, value),
           ),
         ),
       ),

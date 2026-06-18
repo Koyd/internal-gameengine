@@ -1,5 +1,5 @@
 {
-  "name": "@internal/contracts",
+  "name": "@framework/contracts",
   "private": true,
   "type": "module",
   "exports": {

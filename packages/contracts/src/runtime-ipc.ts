@@ -1,5 +1,5 @@
 import { Schema } from "effect"
-import { GameAssetError } from "./runtime-rpcs.ts"
+import { AppAssetError } from "./runtime-rpcs.ts"
 
 export const RuntimeIpcRequest = Schema.Union(
   Schema.Struct({ _tag: Schema.Literal("Health") }),
@@ -13,19 +13,19 @@ export const RuntimeIpcRequest = Schema.Union(
     value: Schema.String,
   }),
   Schema.Struct({
-    _tag: Schema.Literal("ListGameStorageEntries"),
-    gameId: Schema.NonEmptyString,
+    _tag: Schema.Literal("ListAppStorageEntries"),
+    appId: Schema.NonEmptyString,
     collection: Schema.NonEmptyString,
   }),
   Schema.Struct({
-    _tag: Schema.Literal("AppendGameStorageEntry"),
-    gameId: Schema.NonEmptyString,
+    _tag: Schema.Literal("AppendAppStorageEntry"),
+    appId: Schema.NonEmptyString,
     collection: Schema.NonEmptyString,
     value: Schema.String,
   }),
   Schema.Struct({
-    _tag: Schema.Literal("ResolveGameAsset"),
-    gameId: Schema.NonEmptyString,
+    _tag: Schema.Literal("ResolveAppAsset"),
+    appId: Schema.NonEmptyString,
     path: Schema.NonEmptyString,
   }),
 )
@@ -34,7 +34,7 @@ export type RuntimeIpcRequest = typeof RuntimeIpcRequest.Type
 
 export class RuntimeIpcFailure extends Schema.Class<RuntimeIpcFailure>("RuntimeIpcFailure")({
   _tag: Schema.Literal("RuntimeIpcFailure"),
-  error: GameAssetError,
+  error: AppAssetError,
 }) {}
 
 export interface RuntimeIpc {

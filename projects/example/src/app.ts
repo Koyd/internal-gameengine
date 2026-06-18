@@ -1,9 +1,9 @@
 import {
   createFovPostprocessEffect,
   createGodotSpatialShaderPreprocessEffect,
-  defineGame,
+  defineApp,
   defineRenderProcess,
-} from "@internal/engine"
+} from "@framework/engine"
 import {
   AmbientLight,
   AnimationMixer,
@@ -13,14 +13,14 @@ import {
   PerspectiveCamera,
   Scene,
   Vector3,
-} from "@internal/three"
-import { exampleGameConfig } from "./config.ts"
+} from "@framework/three"
+import { exampleAppConfig } from "./config.ts"
 
-export const exampleGameEffects = {
+export const exampleAppEffects = {
   fovDegrees: 60,
 }
 
-export const exampleGame = defineGame(exampleGameConfig, {
+export const exampleApp = defineApp(exampleAppConfig, {
   createWorld: ({ assets }) => {
     const scene = new Scene()
     scene.background = new Color(0x080c10)
@@ -57,7 +57,7 @@ export const exampleGame = defineGame(exampleGameConfig, {
         console.error("Failed to load female model", cause)
       })
 
-    const camera = new PerspectiveCamera(exampleGameEffects.fovDegrees, 1, 0.1, 100)
+    const camera = new PerspectiveCamera(exampleAppEffects.fovDegrees, 1, 0.1, 100)
     camera.position.set(0, 1.2, 4)
     camera.lookAt(0, 0, 0)
 
@@ -78,7 +78,7 @@ export const exampleGame = defineGame(exampleGameConfig, {
       postprocess: [
         createFovPostprocessEffect({
           camera,
-          fov: () => exampleGameEffects.fovDegrees,
+          fov: () => exampleAppEffects.fovDegrees,
         }),
       ],
     }

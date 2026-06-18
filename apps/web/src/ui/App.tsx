@@ -1,22 +1,22 @@
-import { ExampleGameApp } from "@internal/example-game/react"
-import { exampleGameConfig } from "@internal/example-game/config"
-import { GameAssetsProvider, GameLocalStorageProvider } from "@internal/engine"
-import { useEffect, useMemo } from "react"
-import { createRuntimeGameAssets, createRuntimeGameLocalStorage } from "../effect/runtime.ts"
+import { ExampleApp } from "@framework/example-app/preact"
+import { exampleAppConfig } from "@framework/example-app/config"
+import { AppAssetsProvider, AppLocalStorageProvider } from "@framework/engine"
+import { useEffect, useMemo } from "preact/hooks"
+import { createRuntimeAppAssets, createRuntimeAppLocalStorage } from "../effect/runtime.ts"
 
 export function App() {
-  const assets = useMemo(() => createRuntimeGameAssets(exampleGameConfig), [])
-  const storage = useMemo(() => createRuntimeGameLocalStorage(exampleGameConfig), [])
+  const assets = useMemo(() => createRuntimeAppAssets(exampleAppConfig), [])
+  const storage = useMemo(() => createRuntimeAppLocalStorage(exampleAppConfig), [])
 
   useEffect(() => {
-    document.title = exampleGameConfig.title
+    document.title = exampleAppConfig.title
   }, [])
 
   return (
-    <GameAssetsProvider assets={assets}>
-      <GameLocalStorageProvider storage={storage}>
-        <ExampleGameApp />
-      </GameLocalStorageProvider>
-    </GameAssetsProvider>
+    <AppAssetsProvider assets={assets}>
+      <AppLocalStorageProvider storage={storage}>
+        <ExampleApp />
+      </AppLocalStorageProvider>
+    </AppAssetsProvider>
   )
 }

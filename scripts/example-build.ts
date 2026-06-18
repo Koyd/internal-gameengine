@@ -1,9 +1,9 @@
-import { exampleGameConfig } from "../projects/example/src/config.ts"
-import type { GameConfig } from "@internal/engine/config"
+import { exampleAppConfig } from "../projects/example/src/config.ts"
+import type { AppConfig } from "@framework/engine/config"
 import { spawnSync } from "node:child_process"
 
 const action = process.argv[2]
-const config: GameConfig = exampleGameConfig
+const config: AppConfig = exampleAppConfig
 
 if (action === "primary") {
   const task =
@@ -37,7 +37,7 @@ if (action === "package-electron") {
       "--linux",
       "AppImage",
       "--config.productName",
-      exampleGameConfig.title,
+      exampleAppConfig.title,
     ],
     {
       cwd: new URL("../apps/desktop", import.meta.url),
@@ -49,7 +49,7 @@ if (action === "package-electron") {
 
 throw new Error(`Unknown example build action: ${action ?? "<missing>"}`)
 
-function assertElectron(config: GameConfig, operation: string): void {
+function assertElectron(config: AppConfig, operation: string): void {
   if (config.target !== "electron") {
     throw new Error(`${operation} requires target "electron"; config target is "${config.target}"`)
   }
